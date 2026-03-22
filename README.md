@@ -46,6 +46,4 @@ This project was developed as part of my FastAPI internship, implementing end-to
 - **Pydantic**
 - **Uvicorn**
 
----
 
-## 📂 Project Structure
