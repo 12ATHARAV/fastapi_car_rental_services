@@ -242,3 +242,15 @@ def delete_car(car_id: int):
         
     cars.remove(car)
     return {'message': "Car deleted"}
+
+
+# Q14
+@app.post('/return/{rental_id}')
+def return_rental_car(rental_id: int):
+    for r in rentals:
+        if r['rental_id'] == rental_id:
+            r['status'] = 'returned'
+            car = find_car(r['car_id'])
+            car['is_available'] = True
+            return r
+    raise HTTPException(status_code=404, detail='Rental not found')
