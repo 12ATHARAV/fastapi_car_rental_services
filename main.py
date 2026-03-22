@@ -262,4 +262,8 @@ def active_rentals():
     return [r for r in rentals if r['status'] == 'active']
 
 
-@app.get
+@app.get('/rentals/by-car/{car_id}')
+def rental_history(car_id: int):
+    return [r for r in rentals if r['car_id'] == car_id]
+
+
