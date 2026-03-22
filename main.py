@@ -267,3 +267,6 @@ def rental_history(car_id: int):
     return [r for r in rentals if r['car_id'] == car_id]
 
 
+@app.get('cars/unavailable')
+def unavailable_cars():
+    return [car for car in cars if not car['is_available']]
