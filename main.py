@@ -254,3 +254,9 @@ def return_rental_car(rental_id: int):
             car['is_available'] = True
             return r
     raise HTTPException(status_code=404, detail='Rental not found')
+
+
+# Q15
+@app.get('/rentals/active')
+def active_rentals():
+    
