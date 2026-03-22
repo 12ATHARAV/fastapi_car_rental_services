@@ -259,4 +259,7 @@ def return_rental_car(rental_id: int):
 # Q15
 @app.get('/rentals/active')
 def active_rentals():
-    
+    return [r for r in rentals if r['status'] == 'active']
+
+
+@app.get
