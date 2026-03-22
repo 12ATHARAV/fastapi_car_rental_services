@@ -62,7 +62,154 @@ def get_cars_summary():
         'expensive': expensive,
     }
 
+# Q16
+@app.get('/cars/search')
+def search(keyword: str = Query(...)):
+    result = [
+        car for car in cars
+        if keyword.lower() in car['model'].lower()
+        or keyword.lower() in car['brand'].lower()
+        or keyword.lower() in car['type'].lower()
+    ]
     
+    return {'results': result, 'total_found': len(result)}
+
+
+# Q17
+@app.get('/cars/sort')
+def sort(
+    sort_by: str = Query('price_per_day', description='price_per_day, brand, type'),
+    order: str = Query('asc', description='asc or desc')
+):
+    if sort_by not in ['price_per_day', 'brand', 'type']:
+        return {'error': "sort_by must be 'price_per_day', 'brand' or 'type"}
+    
+    if order not in ['asc', 'desc']:
+        return {'error': "order must be 'asc' or 'desc'"}
+    
+    reverse = (order == 'desc')
+    
+    sorted_cars = sorted(cars, key=lambda car: car[sort_by], reverse=reverse)
+
+    return{
+        'sort_by': sort_by,
+        'order': order,
+        'total': len(sorted_cars),
+        'cars': sorted_cars,
+    }
+    
+    
+# Q18
+@app.get("/cars/page")
+def paginate(page: int = 1, limit: int = 3):
+    start = (page - 1) * limit
+    end = start + limit
+    return cars[start:end]
+
+
+# Q20
+@app.get("/cars/browse")
+def browse(
+    keyword: Optional[str] = None,
+    type: Optional[str] = None,
+    fuel_type: Optional[str] = None,
+    max_price: Optional[int] = None,
+    is_available: Optional[bool] = None,
+    sort_by: Optional[str] = None,
+    page: int = 1,
+    limit: int = 3
+):
+    result = cars
+
+    if keyword:
+        result = [car for car in result if keyword.lower() in car["model"].lower()]
+
+    result = filter_cars_logic(type, None, fuel_type, max_price, is_available)
+
+    if sort_by:
+        result = sorted(result, key=lambda x: x.get(sort_by))
+
+    start = (page - 1) * limit
+    end = start + limit
+
+    return {
+        "total": len(result),
+        "page": page,
+        "data": result[start:end]
+    }
+
+
+# Q19
+@app.get('/rentals/search')
+def search_rentals(customer_name: str):
+    
+    result = [
+        r for r in rentals
+        if customer_name.lower() in r['customer_name'].lower()
+    ]
+    
+    return {
+        "keyword": customer_name,
+        "total_found": len(result),
+        "rentals": result
+    }
+
+
+@app.get('/rentals/sort')
+def sort_rentals(
+    sort_by: str = Query('total_cost', description="total_cost or days"),
+    order: str = Query('asc', description="asc or desc")
+):
+    
+    if sort_by not in ['total_cost']:
+        return {'error': "sort_by must be 'total_cost'"}
+    
+    if order not in ['asc', 'desc']:
+        return {'error': "order must be 'asc' or 'desc'"}
+    
+    reverse = (order == 'desc')
+    
+    if sort_by == 'total_cost':
+        sorted_rentals = sorted(
+            rentals,
+            key=lambda r: r['cost']['total_cost'],
+            reverse=reverse
+        )
+    else:
+        sorted_rentals = sorted(
+            rentals,
+            key=lambda r: r['days'],
+            reverse=reverse
+        )
+    
+    return {
+        "sorted_by": sort_by,
+        "order": order,
+        "total": len(sorted_rentals),
+        "rentals": sorted_rentals
+    }
+
+
+@app.get('/rentals/page')
+def paginate_rentals(
+    page: int = Query(1, ge=1),
+    limit: int = Query(3, ge=1)
+):
+    
+    start = (page - 1) * limit
+    end = start + limit
+    
+    paginated = rentals[start:end]
+    
+    return {
+        "page": page,
+        "limit": limit,
+        "total_records": len(rentals),
+        "total_pages": (len(rentals) + limit - 1) // limit,
+        "data": paginated
+    }
+
+
 # Q10    ---> specific route
 @app.get('/cars/filter')
 def filter_cars(
@@ -74,6 +221,11 @@ def filter_cars(
 ):
     return filter_cars_logic(type, brand, fuel_type, max_price, is_available)
     
+    
+# Q15  (continue)
+@app.get('/cars/unavailable')
+def unavailable_cars():
+    return [car for car in cars if not car['is_available']]
     
 # Q3   ---> dynamic route
 @app.get('/cars/{car_id}')
@@ -267,6 +419,3 @@ def rental_history(car_id: int):
     return [r for r in rentals if r['car_id'] == car_id]
 
 
-@app.get('cars/unavailable')
-def unavailable_cars():
-    return [car for car in cars if not car['is_available']]
