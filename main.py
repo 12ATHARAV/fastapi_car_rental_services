@@ -300,7 +300,7 @@ def get_rentals():
 
     
 # Q8
-booking_lock = asyncio.Lock()
+booking_lock = asyncio.Lock()   #it ensures only one booking request processes at a time, preventing race conditions 
 
 @app.post('/rentals')
 async def rent_car(req: RentalRequest, response: Response):
