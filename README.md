@@ -1,4 +1,4 @@
-# 🚗 SpeedRide Car Rental Servic
+# 🚗 SpeedRide Car Rental Service
 
 A RESTful API built with **FastAPI** for managing a car rental system — including fleet management, bookings, pricing with discounts, and rental history.
 
