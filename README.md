@@ -244,8 +244,4 @@ GET /cars/sort?sort_by=price_per_day&order=desc
 - All data is stored **in-memory** — restarting the server resets rentals and any added/modified cars.
 - Routes with path parameters (e.g. `/cars/{car_id}`) are placed **after** specific routes (e.g. `/cars/filter`) to avoid conflicts.
 
----
 
-## 📄 License
-
-This project is for educational purposes.
